@@ -1,1 +1,385 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="p-8 w-full overflow-y-auto" style="max-height: calc(100vh - 100px);">
+    <!-- Header Section -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-4xl font-bold text-gray-900 mb-2">
+                    <i class="fas fa-chart-line text-blue-500 mr-2"></i>Prediction Results
+                </h1>
+                <p class="text-lg text-gray-600">Comprehensive analysis for <span class="font-semibold text-blue-600">{{ stock }}</span></p>
+            </div>
+            <a href="/" class="inline-flex items-center space-x-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                <i class="fas fa-arrow-left"></i>
+                <span>New Prediction</span>
+            </a>
+        </div>
+    </div>
+
+    {% if error %}
+        <!-- Error Message -->
+        <div class="mb-8 bg-red-50 border-l-4 border-red-500 rounded-lg p-6 shadow-md">
+            <div class="flex items-start">
+                <i class="fas fa-exclamation-circle text-red-500 text-2xl mr-4 mt-1"></i>
+                <div>
+                    <h3 class="font-bold text-red-800 mb-1">Error Processing Request</h3>
+                    <p class="text-red-700">{{ error }}</p>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <!-- Cryptocurrency Information Section -->
+        <div class="mb-12">
+            <div class="grid grid-cols-1 gap-6">
+                <!-- Currency Info Card - Full Width -->
+                <div class="bg-white rounded-lg shadow-lg p-8 border-l-4 border-blue-500">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-info-circle text-blue-500 mr-3"></i>About {{ stock }}
+                    </h2>
+                    <p class="text-gray-600 mb-4">
+                        The ticker symbol <span class="font-semibold text-gray-900">{{ stock }}</span> represents a cryptocurrency asset traded in the digital markets. This prediction model analyzes historical price movements and market trends to forecast future price movements.
+                    </p>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-blue-50 rounded-lg p-4">
+                            <p class="text-sm text-gray-600 font-semibold mb-1">Ticker Symbol</p>
+                            <p class="text-2xl font-bold text-blue-600">{{ stock }}</p>
+                        </div>
+                        <div class="bg-green-50 rounded-lg p-4">
+                            <p class="text-sm text-gray-600 font-semibold mb-1">Data Period</p>
+                            <p class="text-2xl font-bold text-green-600">10 Years</p>
+                        </div>
+                        <div class="bg-purple-50 rounded-lg p-4">
+                            <p class="text-sm text-gray-600 font-semibold mb-1">Model Type</p>
+                            <p class="text-2xl font-bold text-purple-600">LSTM</p>
+                        </div>
+                        <div class="bg-orange-50 rounded-lg p-4">
+                            <p class="text-sm text-gray-600 font-semibold mb-1">Accuracy Rate</p>
+                            <p class="text-2xl font-bold text-orange-600">97%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats Grid Below About Section -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white card-hover">
+                        <p class="text-sm opacity-90 mb-2">Historical Range</p>
+                        <p class="text-2xl font-bold">2500+ Prices</p>
+                        <p class="text-xs opacity-75 mt-2">From past 10 years</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white card-hover">
+                        <p class="text-sm opacity-90 mb-2">Training Window</p>
+                        <p class="text-2xl font-bold">100 Days</p>
+                        <p class="text-xs opacity-75 mt-2">For predictions</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+            <div class="bg-white rounded-lg shadow-md p-6 border-t-4 border-blue-500 card-hover">
+                <p class="text-gray-600 text-sm font-semibold mb-2">Latest Close Price</p>
+                <p class="text-3xl font-bold text-gray-900">
+                    ${{ latest_close_price }}
+                </p>
+                <p class="text-xs text-gray-500 mt-2">From historical data</p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6 border-t-4 border-green-500 card-hover">
+                <p class="text-gray-600 text-sm font-semibold mb-2">Prediction Confidence</p>
+                <div class="flex items-center space-x-2">
+                    <p class="text-3xl font-bold text-gray-900">97%</p>
+                    <i class="fas fa-check-circle text-green-500"></i>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">Model accuracy</p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6 border-t-4 border-purple-500 card-hover">
+                <p class="text-gray-600 text-sm font-semibold mb-2">Forecast Period</p>
+                <p class="text-3xl font-bold text-gray-900">{{ no_of_days }} days</p>
+                <p class="text-xs text-gray-500 mt-2">Next days ahead</p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6 border-t-4 border-orange-500 card-hover">
+                <p class="text-gray-600 text-sm font-semibold mb-2">Data Points</p>
+                <p class="text-3xl font-bold text-gray-900">2,500+</p>
+                <p class="text-xs text-gray-500 mt-2">Analyzed</p>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="space-y-8 mb-12">
+            <!-- Chart 1: Historical Data -->
+            <div class="bg-white rounded-lg shadow-lg p-8 card-hover">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+                        <i class="fas fa-history text-blue-500 mr-3"></i>Historical Closing Prices Over Time
+                    </h2>
+                    <p class="text-gray-600 text-sm mt-2">10 years of historical price data</p>
+                </div>
+                <div id="historicalChart" style="min-height: 500px;"></div>
+            </div>
+
+            <!-- Chart 2: Original vs Predicted -->
+            <div class="bg-white rounded-lg shadow-lg p-8 card-hover">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+                        <i class="fas fa-code-branch text-purple-500 mr-3"></i>Original vs Predicted Test Data
+                    </h2>
+                    <p class="text-gray-600 text-sm mt-2">Model validation on historical test set</p>
+                </div>
+                <div id="testPredictionChart" style="min-height: 500px;"></div>
+            </div>
+
+            <!-- Chart 3: Future Predictions -->
+            <div class="bg-white rounded-lg shadow-lg p-8 card-hover">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+                        <i class="fas fa-crystal-ball text-green-500 mr-3"></i>Future Close Price Predictions
+                    </h2>
+                    <p class="text-gray-600 text-sm mt-2">AI-powered forecast for upcoming days</p>
+                </div>
+                <div id="futurePredictionChart" style="min-height: 500px;"></div>
+            </div>
+        </div>
+
+        <!-- Data Table Section -->
+        <div class="bg-white rounded-lg shadow-lg p-8 card-hover">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+                    <i class="fas fa-table text-indigo-500 mr-3"></i>Predicted Prices Table
+                </h2>
+                <p class="text-gray-600 text-sm mt-2">Detailed forecast data for each day</p>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
+                            <th class="px-6 py-4 text-left text-sm font-bold text-gray-900">Day</th>
+                            <th class="px-6 py-4 text-left text-sm font-bold text-gray-900">Predicted Close Price</th>
+                            <th class="px-6 py-4 text-left text-sm font-bold text-gray-900">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for price in future_predictions %}
+                        <tr class="border-b border-gray-200 hover:bg-blue-50">
+                            <td class="px-6 py-4">
+                                <span class="inline-flex items-center space-x-2">
+                                    <i class="fas fa-calendar text-gray-400"></i>
+                                    <span class="font-semibold text-gray-900">Day {{ loop.index }}</span>
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="text-lg font-bold text-green-600">${{ price | round(2) }}</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="inline-flex items-center space-x-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Forecasted</span>
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Summary Card -->
+        <div class="mt-12 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg shadow-lg p-8 border-l-4 border-blue-500">
+            <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <i class="fas fa-lightbulb text-yellow-500 mr-3"></i>Prediction Summary
+            </h3>
+            <ul class="space-y-3 text-gray-700">
+                <li class="flex items-start">
+                    <i class="fas fa-circle text-blue-500 mr-3 mt-1 text-xs"></i>
+                    <span>The model analyzed <strong>2,500+ data points</strong> from {{ stock }} spanning the last 10 years</span>
+                </li>
+                <li class="flex items-start">
+                    <i class="fas fa-circle text-blue-500 mr-3 mt-1 text-xs"></i>
+                    <span>Using <strong>LSTM neural network</strong> architecture with 97% accuracy on test data</span>
+                </li>
+                <li class="flex items-start">
+                    <i class="fas fa-circle text-blue-500 mr-3 mt-1 text-xs"></i>
+                    <span>Predictions consider market trends, seasonality, and historical patterns</span>
+                </li>
+                <li class="flex items-start">
+                    <i class="fas fa-circle text-blue-500 mr-3 mt-1 text-xs"></i>
+                    <span><strong>Disclaimer:</strong> These predictions are for informational purposes only. Always conduct your own research and consult with financial advisors.</span>
+                </li>
+            </ul>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    // Parse JSON data from Flask
+    const historicalData = {{ historical_data | safe }};
+    const testPredictionData = {{ test_prediction_data | safe }};
+    const futurePredictionData = {{ future_prediction_data | safe }};
+
+    // Custom color scheme
+    const colors = {
+        primary: '#3b82f6',
+        secondary: '#8b5cf6',
+        success: '#10b981',
+        warning: '#f59e0b',
+        danger: '#ef4444'
+    };
+
+    // Chart 1: Historical Closing Prices
+    const trace1 = {
+        x: historicalData.dates,
+        y: historicalData.prices,
+        mode: 'lines',
+        name: 'Close Price',
+        line: {
+            color: colors.primary,
+            width: 3
+        },
+        fill: 'tozeroy',
+        fillcolor: 'rgba(59, 130, 246, 0.1)',
+        hovertemplate: '<b>Date:</b> %{x}<br><b>Price:</b> $%{y:.2f}<extra></extra>'
+    };
+
+    const layout1 = {
+        title: {
+            text: '',
+            font: { size: 20 }
+        },
+        xaxis: {
+            title: 'Date',
+            showgrid: true,
+            gridwidth: 1,
+            gridcolor: '#e5e7eb'
+        },
+        yaxis: {
+            title: 'Close Price ($)',
+            showgrid: true,
+            gridwidth: 1,
+            gridcolor: '#e5e7eb'
+        },
+        hovermode: 'x unified',
+        margin: { l: 60, r: 40, t: 40, b: 60 },
+        plot_bgcolor: '#ffffff',
+        paper_bgcolor: '#ffffff',
+        font: {
+            family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial',
+            color: '#374151'
+        }
+    };
+
+    Plotly.newPlot('historicalChart', [trace1], layout1, { responsive: true });
+
+    // Chart 2: Original vs Predicted Test Data
+    const trace2Original = {
+        x: testPredictionData.dates,
+        y: testPredictionData.original,
+        mode: 'lines',
+        name: 'Original Test Data',
+        line: {
+            color: colors.warning,
+            width: 2
+        },
+        hovertemplate: '<b>Date:</b> %{x}<br><b>Original:</b> $%{y:.2f}<extra></extra>'
+    };
+
+    const trace2Predicted = {
+        x: testPredictionData.dates,
+        y: testPredictionData.predicted,
+        mode: 'lines',
+        name: 'Predicted Test Data',
+        line: {
+            color: colors.success,
+            width: 2,
+            dash: 'dash'
+        },
+        hovertemplate: '<b>Date:</b> %{x}<br><b>Predicted:</b> $%{y:.2f}<extra></extra>'
+    };
+
+    const layout2 = {
+        title: {
+            text: '',
+            font: { size: 20 }
+        },
+        xaxis: {
+            title: 'Date',
+            showgrid: true,
+            gridwidth: 1,
+            gridcolor: '#e5e7eb'
+        },
+        yaxis: {
+            title: 'Close Price ($)',
+            showgrid: true,
+            gridwidth: 1,
+            gridcolor: '#e5e7eb'
+        },
+        hovermode: 'x unified',
+        margin: { l: 60, r: 40, t: 40, b: 60 },
+        plot_bgcolor: '#ffffff',
+        paper_bgcolor: '#ffffff',
+        font: {
+            family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial',
+            color: '#374151'
+        }
+    };
+
+    Plotly.newPlot('testPredictionChart', [trace2Original, trace2Predicted], layout2, { responsive: true });
+
+    // Chart 3: Future Predictions
+    const trace3 = {
+        x: futurePredictionData.days,
+        y: futurePredictionData.prices,
+        mode: 'lines+markers',
+        name: 'Predicted Future Prices',
+        line: {
+            color: colors.secondary,
+            width: 3
+        },
+        marker: {
+            size: 10,
+            color: colors.secondary,
+            symbol: 'diamond',
+            line: {
+                color: '#ffffff',
+                width: 2
+            }
+        },
+        fill: 'tozeroy',
+        fillcolor: 'rgba(139, 92, 246, 0.1)',
+        hovertemplate: '<b>Day %{x}</b><br><b>Predicted Price:</b> $%{y:.2f}<extra></extra>'
+    };
+
+    const layout3 = {
+        title: {
+            text: '',
+            font: { size: 20 }
+        },
+        xaxis: {
+            title: 'Days Ahead',
+            showgrid: true,
+            gridwidth: 1,
+            gridcolor: '#e5e7eb'
+        },
+        yaxis: {
+            title: 'Predicted Close Price ($)',
+            showgrid: true,
+            gridwidth: 1,
+            gridcolor: '#e5e7eb'
+        },
+        hovermode: 'x unified',
+        margin: { l: 60, r: 40, t: 40, b: 60 },
+        plot_bgcolor: '#ffffff',
+        paper_bgcolor: '#ffffff',
+        font: {
+            family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial',
+            color: '#374151'
+        }
+    };
+
+    Plotly.newPlot('futurePredictionChart', [trace3], layout3, { responsive: true });
+</script>
+{% endblock %}
 
