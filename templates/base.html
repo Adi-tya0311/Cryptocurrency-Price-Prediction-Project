@@ -1,1 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Plotly for charts -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Custom animations -->
+    <style>
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+
+        .animate-slide-in-right {
+            animation: slideInRight 0.5s ease-out;
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .animate-slide-in-left {
+            animation: slideInLeft 0.5s ease-out;
+        }
+
+        .nav-link {
+            @apply transition-all duration-300 ease-in-out;
+        }
+
+        .nav-link:hover {
+            @apply pl-6;
+        }
+
+        .nav-link.active {
+            @apply bg-blue-600 text-white border-l-4 border-blue-400 pl-4;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .card-hover {
+            @apply transition-all duration-300 transform hover:scale-105 hover:shadow-xl;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Smooth scroll behavior */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Fixed Sidebar Navigation -->
+    <div class="fixed inset-y-0 left-0 w-64 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 shadow-2xl animate-slide-in-left z-50">
+        <!-- Logo Section -->
+        <div class="p-6 border-b border-gray-700">
+            <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center transform hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-bitcoin text-white text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-white font-bold text-sm">CryptoPredict</h1>
+                    <p class="text-gray-400 text-xs">AI Price Forecasting</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="p-4 space-y-2">
+            <a href="/" class="nav-link flex items-center space-x-3 px-4 py-3 text-gray-300 rounded-lg {% if request.path == '/' %}active{% endif %} hover:bg-gray-700">
+                <i class="fas fa-home w-5"></i>
+                <span>Dashboard</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <div class="fixed top-0 left-64 right-0 h-16 bg-white border-b border-gray-200 shadow-sm z-40 animate-fade-in-up">
+        <div class="h-full px-8 flex items-center justify-between">
+            <div>
+                <h2 class="text-2xl font-bold gradient-text">Cryptocurrency Price Predictor</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="ml-64 mt-16 min-h-screen">
+        <div class="animate-slide-in-right">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- Dashboard JavaScript -->
+    <script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+</body>
+</html>
 
