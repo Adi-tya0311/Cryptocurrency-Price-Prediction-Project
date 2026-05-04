@@ -1,8 +1,7 @@
 Flask
 pandas
+numpy
 yfinance
-keras.model
-sklearn.preprocessing
-datetime
-json
+tensorflow
+scikit-learn
 gunicorn
