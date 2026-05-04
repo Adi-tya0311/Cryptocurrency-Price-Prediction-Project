@@ -1,1 +1,8 @@
-
+Flask
+pandas
+yfinance
+keras.model
+sklearn.preprocessing
+datetime
+json
+gunicorn
