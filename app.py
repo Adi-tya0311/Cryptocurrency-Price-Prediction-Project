@@ -2,7 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 import pandas as pd
 import numpy as np
 import yfinance as yf
-from tensorflow.keras.models import load_model
+from curl_cffi import requests as curl_requests
+from keras.models import load_model
 from sklearn.preprocessing import MinMaxScaler
 from datetime import datetime
 import json
@@ -11,6 +12,10 @@ app = Flask(__name__)
 
 # Load Pre-trained Model
 model = load_model("model.keras")
+
+# Browser-impersonating session to reduce chances of Yahoo Finance
+# blocking requests coming from a cloud-hosted server IP
+yf_session = curl_requests.Session(impersonate="chrome")
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -28,7 +33,15 @@ def predict():
     # Fetch Stock Data
     end = datetime.now()
     start = datetime(end.year - 10, end.month, end.day)
-    stock_data = yf.download(stock, start, end, progress=False)
+    try:
+        stock_data = yf.download(stock, start=start, end=end, progress=False, session=yf_session)
+    except Exception as e:
+        return render_template(
+            "result.html",
+            error=f"Could not fetch data right now (Yahoo Finance may be temporarily blocking this server). Please try again in a few minutes. Details: {e}",
+            stock=stock
+        )
+
     if stock_data.empty:
         return render_template(
             "result.html", 
@@ -118,5 +131,3 @@ def predict():
 if __name__ == "__main__":
     import os
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-
-
